@@ -6,9 +6,11 @@ import json
 import tweepy
 
 # override tweepy.StreamListener to add logic to on_status
+from dotenv import load_dotenv
 from tweepy import StreamListener, Stream, OAuthHandler
 
-ACCESS_TOKEN = os.environ['ACCESS_TOKEN']
+load_dotenv()
+ACCESS_TOKEN = os.environ.get('ACCESS_TOKEN')
 ACCESS_SECRET = os.environ.get('ACCESS_SECRET')
 CONSUMER_KEY = os.environ.get('CONSUMER_KEY')
 CONSUMER_SECRET = os.environ.get('CONSUMER_SECRET')
@@ -38,4 +40,4 @@ def auth():
 
 
 stream = auth()
-stream.filter(track=['basketball'])
+stream.filter(track=['coronavirus'])

@@ -1,7 +1,5 @@
-import json
 import os
 import time
-from subprocess import Popen
 
 from dotenv import load_dotenv
 from tweepy import StreamListener, Stream, OAuthHandler
@@ -21,17 +19,20 @@ class StdOutListener(StreamListener):
 
     """
     def __init__(self, f, interval):
+        super().__init__()
         self._f = f
         self._list_tweet = []
         self._list_thread = []
         self._interval = interval
-        self._timestamp = 0
+        self._timestamp = time.time()
 
     def on_data(self, data):
         self._list_tweet.append(data)
-        if time.clock() - self._timestamp > self._interval:
-            self._timestamp += time.clock()
-            HDFSSender(data, "hdfs:///user/hapoop/tweets").start()
+        print(time.time()-self._timestamp)
+        if time.time() - self._timestamp > self._interval:
+            print(self._list_tweet)
+            self._timestamp = time.time()
+            ##HDFSSender(data, "hdfs:///user/hapoop/tweets").start()
         return True
 
     def on_error(self, status):
@@ -50,5 +51,4 @@ def auth(f, interval):
 f = open("tweet.json", "a")
 stream = auth(f, 15)
 stream.filter(track=['oui'])
-print("daroit")
 f.close()

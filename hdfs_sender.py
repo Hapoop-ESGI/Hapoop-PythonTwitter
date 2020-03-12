@@ -11,7 +11,7 @@ class HDFSSender(Thread):
         Thread.__init__(self)
         self._data = data
         self._hdfs_ip = hdfs_ip
-        self._spark_session = SparkSession.builder.appName("exemple").getOrCreate()
+        self._spark_session = SparkSession.builder.appName("POOP").getOrCreate()
 
     def run(self):
         """Code à exécuter pendant l'exécution du thread."""

@@ -1,21 +1,23 @@
 from threading import Thread
 import time
 from shutil import copyfile
+from pyspark.sql import SparkSession
 
 
 class HDFSSender(Thread):
     """Thread chargé simplement d'afficher une lettre dans la console."""
 
-    def __init__(self, file_path_in, file_path_out, interval):
+    def __init__(self, data, hdfs_ip):
         Thread.__init__(self)
-        self._in = file_path_in
-        self._out = file_path_out
-        self._interval = interval
+        self._data = data
+        self._hdfs_ip = hdfs_ip
+        self._spark_session = SparkSession.builder.appName("exemple").getOrCreate()
 
     def run(self):
         """Code à exécuter pendant l'exécution du thread."""
-        timestamp = 0
-        while 1:
-            if time.clock() - timestamp > self._interval:
-                timestamp += time.clock()
-                copyfile(self._in, self._out)
+        print("SEND")
+        print(self._data)
+
+    ##def write_data_hdfs(self, data):
+        ##rdd = self._spark_session.sparkContext.parallelize(data)
+        ##rdd.saveAsTextFile(self._hdfs_ip)

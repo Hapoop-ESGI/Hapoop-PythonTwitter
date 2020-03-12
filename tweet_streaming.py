@@ -41,6 +41,4 @@ def auth(f):
 f = open("tweet.json", "w")
 stream = auth(f)
 stream.filter(track=['porn'])
-
-f.write("Woops! I have deleted the content!")
 f.close()

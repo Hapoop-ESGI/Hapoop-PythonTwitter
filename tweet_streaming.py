@@ -1,6 +1,10 @@
 import os
+from subprocess import Popen
+
 from dotenv import load_dotenv
 from tweepy import StreamListener, Stream, OAuthHandler
+
+from hdfs_sender import HDFSSender
 
 load_dotenv()
 ACCESS_TOKEN = os.environ.get('ACCESS_TOKEN')
@@ -21,8 +25,8 @@ class StdOutListener(StreamListener):
         self._f = f
 
     def on_data(self, data):
-        #print(data)
-        f.write(data+"\n")
+        print(data)
+        f.write(data + "\n")
         return True
 
     def on_error(self, status):
@@ -38,7 +42,10 @@ def auth(f):
     return stream
 
 
-f = open("tweet.json", "w")
+sender = HDFSSender("tweet.json", "out.json", 5)
+sender.start()
+f = open("tweet.json", "a")
 stream = auth(f)
-stream.filter(track=['porn'])
+stream.filter(track=['corona'])
+print("daroit")
 f.close()

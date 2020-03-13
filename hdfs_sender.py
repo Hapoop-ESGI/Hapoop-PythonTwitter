@@ -1,6 +1,4 @@
 from threading import Thread
-import time
-from shutil import copyfile
 from pyspark.sql import SparkSession
 
 
@@ -15,9 +13,8 @@ class HDFSSender(Thread):
 
     def run(self):
         """Code à exécuter pendant l'exécution du thread."""
-        print("SEND")
-        print(self._data)
+        self.write_data_hdfs(self._data)
 
-    ##def write_data_hdfs(self, data):
-        ##rdd = self._spark_session.sparkContext.parallelize(data)
-        ##rdd.saveAsTextFile(self._hdfs_ip)
+    def write_data_hdfs(self, data):
+        rdd = self._spark_session.sparkContext.parallelize(data)
+        rdd.saveAsTextFile(self._hdfs_ip)

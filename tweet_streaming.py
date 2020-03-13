@@ -1,3 +1,4 @@
+import json
 import os
 import time
 
@@ -18,29 +19,39 @@ class StdOutListener(StreamListener):
     This is a basic listener that just prints received tweets to stdout.
 
     """
+
     def __init__(self, f, interval):
         super().__init__()
-        self._f = f
+        self._filepath = f
         self._list_tweet = []
         self._list_thread = []
         self._interval = interval
         self._timestamp = time.time()
 
+
     def on_data(self, data):
-        self._list_tweet.append(data)
-        print(time.time()-self._timestamp)
+        self._list_tweet.append(json.dumps(data))
         if time.time() - self._timestamp > self._interval:
-            print(self._list_tweet)
+            print("SENDING "+str(len(self._list_tweet)) +" tweets TO HDFS...")
             self._timestamp = time.time()
-            ##HDFSSender(data, "hdfs:///user/hapoop/tweets").start()
+            HDFSSender(data, "hdfs:///user/hapoop/tweets").start()
         return True
 
     def on_error(self, status):
         print(status)
 
+    def save(self):
+        with open(self._filepath, "w") as f:
+            f.write(json.dumps(self._list_tweet))
+            print("Saving "+str(len(self._list_tweet)) + " tweets")
 
-def auth(f, interval):
-    l = StdOutListener(f, interval)
+    def load_json(self):
+        print("Load json")
+        with open(self._filepath) as file:
+            self._list_tweet = json.load(file)
+            print("there are : "+str(len(self._list_tweet))+" tweets")
+
+def auth(l, interval):
     auth = OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
 
@@ -48,7 +59,12 @@ def auth(f, interval):
     return stream
 
 
-f = open("tweet.json", "a")
-stream = auth(f, 15)
-stream.filter(track=['oui'])
-f.close()
+
+try:
+    f = "tweets/tweet.json"
+    l = StdOutListener(f, 15)
+    l.load_json()
+    stream = auth(l, 15)
+    stream.filter(track=['corona'])
+except KeyboardInterrupt:
+    l.save()
